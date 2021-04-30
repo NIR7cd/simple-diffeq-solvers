@@ -1,18 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "../test_funcs.h"
+#include <test_funcs.h>
+#include <euler.h>
 
 #define START 0.0
-#define END 2.0
+#define END 2.1
 #define DISPLAY_STEP 0.1
-
-void euler(float(*f)(float t, float y), float t0, float y0, float h, int n, float* t, float* y); 
 
 int main(int argc, char* argv[]) {
     float (*f)(float, float);
-    float i, t0, y0, h, t_m, y_m;
+    float i, h, t0, y0, t1m, y1m, y2m;
     int m, n;
-    float *t, *y;
+    float *t_euler, *y_euler;
+    float *t_impr, *y_impr;
 
     t0 = START;
     y0 = 1.;
@@ -24,20 +24,27 @@ int main(int argc, char* argv[]) {
         h = 0.05;
     }
 
-    n = (int)((END - START + 2*h)/h);
-    t = (float*)calloc(n, sizeof(float));
-    y = (float*)calloc(n, sizeof(float));
+    n = (int)((END - START)/h) + 1;
+    t_euler = (float*)calloc(n, sizeof(float));
+    y_euler = (float*)calloc(n, sizeof(float));
+    t_impr  = (float*)calloc(n, sizeof(float));
+    y_impr  = (float*)calloc(n, sizeof(float));
 
-    euler(f, t0, y0, h, n, t, y);
+    euler(f, t0, y0, h, n, t_euler, y_euler);
+    euler_improved(f, t0, y0, h, n, t_impr, y_impr);
 
+    printf("Iteration t Euler Improved_Euler Exact\n");
     for (i = START; i <= END; i += DISPLAY_STEP) {
         m = (int)(i/h);
-        t_m = t[m];
-        y_m = y[m];
-        printf("%5d %12.7f %12.7f %12.7f\n", m, t_m, y_m, bd_8_1_5_exact(t_m));
+        t1m = t_euler[m];
+        y1m = y_euler[m];
+        y2m = y_impr[m];
+        printf("%5d %12.7f %12.7f %12.7f %12.7f\n", m, t1m, y1m, y2m, bd_8_1_5_exact(t1m));
     }
-    printf("%5d %12.7f %12.7f %12.7f\n", n-1, t[n-1], y[n-1], bd_8_1_5_exact(t[n-1]));
+    //printf("%5d %12.7f %12.7f %12.7f %12.7f\n", n-1, t_euler[n-1], y_euler[n-1], y_impr[n-1],  bd_8_1_5_exact(t_euler[n-1]));
     
-    free(t);
-    free(y);
+    free(t_euler);
+    free(y_euler);
+    free(t_impr);
+    free(y_impr);
 }
