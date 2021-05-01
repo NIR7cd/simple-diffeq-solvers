@@ -33,15 +33,14 @@ int main(int argc, char* argv[]) {
     euler(f, t0, y0, h, n, t_euler, y_euler);
     euler_improved(f, t0, y0, h, n, t_impr, y_impr);
 
-    printf("Iteration t Euler Improved_Euler Exact\n");
+    printf("%s %12s %12s %14s %12s\n", "Iteration", "t", "Euler", "Improved Euler", "Exact");
     for (i = START; i <= END; i += DISPLAY_STEP) {
         m = (int)(i/h);
         t1m = t_euler[m];
         y1m = y_euler[m];
         y2m = y_impr[m];
-        printf("%5d %12.7f %12.7f %12.7f %12.7f\n", m, t1m, y1m, y2m, bd_8_1_5_exact(t1m));
+        printf("%9d %12.7f %12.7f %14.7f %12.7f\n", m, t1m, y1m, y2m, bd_8_1_5_exact(t1m));
     }
-    //printf("%5d %12.7f %12.7f %12.7f %12.7f\n", n-1, t_euler[n-1], y_euler[n-1], y_impr[n-1],  bd_8_1_5_exact(t_euler[n-1]));
     
     free(t_euler);
     free(y_euler);

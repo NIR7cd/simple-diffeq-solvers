@@ -1,2 +1,3 @@
 *.o
 test_euler
+test_euler_var
