@@ -88,7 +88,7 @@ void euler_var_step(float(*f)(float, float), float t0, float tf, float y0, float
         }
 
         (*t)[i] = (*t)[i-1] + newh;
-        (*y)[i] = y_euler;
+        (*y)[i] = y_euler_imp;
         i += 1;
     }
     *n = i;
