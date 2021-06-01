@@ -8,6 +8,9 @@
 #define START 0.0
 #define END 2.1
 #define DISPLAY_STEP 0.1
+#ifndef MAXERR
+#define MAXERR 0.001
+#endif
 
 int main(int argc, char* argv[]) {
     float (*f)(float, float);
@@ -17,6 +20,7 @@ int main(int argc, char* argv[]) {
     float *t_impr, *y_impr;
     float *t_rk4, *y_rk4;
     float *t_ab4, *y_ab4;
+    float *t_pcabam, *y_pcabam;
 
     t0 = START;
     y0 = 1.;
@@ -37,11 +41,14 @@ int main(int argc, char* argv[]) {
     y_rk4   = (float*)calloc(n, sizeof(float));
     t_ab4   = (float*)calloc(n, sizeof(float));
     y_ab4   = (float*)calloc(n, sizeof(float));
+    t_pcabam = (float*)calloc(n, sizeof(float));
+    y_pcabam = (float*)calloc(n, sizeof(float));
 
     euler(f, t0, y0, h, n, t_euler, y_euler);
     euler_improved(f, t0, y0, h, n, t_impr, y_impr);
     rk4(f, t0, y0, h, n, t_rk4, y_rk4);
     ab4(f, t0, y0, h, n, t_ab4, y_ab4);
+    pcabam(f, t0, y0, h, n, MAXERR, t_pcabam, y_pcabam);
 
     printf("%s %12s %12s %14s %14s %12s\n", "Iteration", "t", "Euler", "Improved Euler", "Runge-Kutta", "Exact");
     for (i = START; i <= END; i += DISPLAY_STEP) {
@@ -54,12 +61,13 @@ int main(int argc, char* argv[]) {
     }
 
     printf("\n");
-    printf("%s %12s %15s %12s\n", "Iteration", "t", "Adams-Bashforth", "Exact");
+    printf("%s %12s %15s %15s %12s\n", "Iteration", "t", "Adams-Bashforth", "Pred-Corr AB AM", "Exact");
     for (i = START; i <= END; i += DISPLAY_STEP) {
         m = (int)(i/h);
         t1m = t_ab4[m];
         y1m = y_ab4[m];
-        printf("%9d %12.7f %15.7f %12.7f\n", m, t1m, y1m, bd_8_1_5_exact(t1m));
+        y2m = y_pcabam[m];
+        printf("%9d %12.7f %15.7f %15.7f %12.7f\n", m, t1m, y1m, y2m,  bd_8_1_5_exact(t1m));
     }
     
     free(t_euler);
@@ -70,4 +78,6 @@ int main(int argc, char* argv[]) {
     free(y_rk4);
     free(t_ab4);
     free(y_ab4);
+    free(t_pcabam);
+    free(y_pcabam);
 }
